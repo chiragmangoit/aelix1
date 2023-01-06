@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 
 import '../../providers/classes_provider.dart';
 import '../../providers/student_list_provider.dart';
+import '../manage_class/add_class.dart';
 import '../profile/textWidget.dart';
 
 class CreateStudent extends StatefulWidget {
@@ -333,9 +334,15 @@ class _CreateStudentState extends State<CreateStudent> {
                     },
                   ),
                   const SizedBox(height: 24),
-                  const Text(
-                    "Class",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: const [
+                      Text(
+                        "Class",
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                      AddClass()
+                    ],
                   ),
                   const SizedBox(height: 8),
                   DropdownButtonFormField(

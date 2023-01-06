@@ -11,6 +11,7 @@ class StudentsInfo extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         foregroundColor: Colors.blue,
+        title: const Text('Manage Student'),
       ),
       body: const Scaffold(
           body: ManageStudent()),

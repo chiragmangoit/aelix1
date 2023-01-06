@@ -225,7 +225,16 @@ class ChatDetailPageState extends State<ChatDetailPage> {
                               : Alignment.topRight),
                           child: Container(
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
+                              borderRadius:
+                                  messages![index].messageType == "receiver"
+                                      ? const BorderRadius.only(
+                                          bottomLeft: Radius.circular(10),
+                                          topRight: Radius.circular(10),
+                                          bottomRight: Radius.circular(10))
+                                      : const BorderRadius.only(
+                                          bottomLeft: Radius.circular(10),
+                                          topLeft: Radius.circular(10),
+                                          bottomRight: Radius.circular(10)),
                               color: (messages![index].messageType == "receiver"
                                   ? Colors.grey.shade200
                                   : Colors.blue[200]),

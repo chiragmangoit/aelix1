@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 import '../../providers/auth_provider.dart';
@@ -54,7 +55,12 @@ class ConversationListState extends State<ConversationList> {
                         children: <Widget>[
                           Text(
                             widget.name,
-                            style: const TextStyle(fontSize: 16),
+                              style: GoogleFonts.poppins(
+                                  textStyle: Theme.of(context).textTheme.headlineMedium,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color: const Color.fromRGBO(19, 15, 38, 1)
+                              ),
                           ),
                           const SizedBox(
                             height: 6,

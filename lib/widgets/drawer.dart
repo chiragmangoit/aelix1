@@ -69,6 +69,22 @@ class MyDrawer extends StatelessWidget {
           if (CommonModel.userData['role'] != 'counsellor')
             ListTile(
               leading: const Icon(
+                Icons.pie_chart,
+                color: Colors.black,
+              ),
+              title: Text(
+                "Attendance Report",
+                textScaleFactor: 1.2,
+                style: TextStyle(
+                  color: Colors.blue[900],
+                ),
+              ),
+              onTap: () =>
+              {toggleDrawer(), Navigator.pushNamed(context, '/attendanceReport')},
+            ),
+          if (CommonModel.userData['role'] != 'counsellor')
+            ListTile(
+              leading: const Icon(
                 Icons.add_card_outlined,
                 color: Colors.black,
               ),

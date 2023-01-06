@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:aelix/providers/student_list_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:velocity_x/velocity_x.dart';
@@ -45,6 +46,8 @@ class _ClassDashboardState extends State<ClassDashboard> {
 
   @override
   Widget build(BuildContext context) {
+    selectedFilter =  Provider.of<StudentList>(context, listen: false)
+        .classType;
     final studentData = Provider.of<StudentList>(context).data;
     return studentData != null
         ? Column(
@@ -52,44 +55,45 @@ class _ClassDashboardState extends State<ClassDashboard> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      const Icon(Icons.dashboard),
-                      const SizedBox(
-                        width: 5.0,
-                      ),
-                      Text(
-                        Auth.role != 'counsellor'
-                            ? 'Class Dashboard'
-                            : 'Today Attendance for class ${studentData[0]['assignClass']['className']}',
-                        style: const TextStyle(
-                            fontSize: 24, fontWeight: FontWeight.bold),
-                      )
-                    ],
-                  ),
+                  if (Auth.role == 'counsellor')
+                    Text( studentData.length == 0 ? 'Today Attendance' :
+                      'Today Attendance for class ${studentData[0]['assignClass']['className']}',
+                      softWrap: true,
+                      maxLines: 2,
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.w500),
+                    ),
                   if (Auth.role != 'counsellor')
                     Row(
                       children: [
-                        const Text(
-                          'Filter By:',
-                          style: TextStyle(
-                            fontSize: 20,
+                         Text(
+                          'FILTER BY:',
+                          style: GoogleFonts.poppins(
+                            textStyle: Theme.of(context).textTheme.headlineMedium,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: const Color.fromRGBO(19, 15, 38, 1)
                           ),
                         ),
                         const SizedBox(
-                          width: 3.0,
+                          width: 8.0,
                         ),
                         SizedBox(
                           width: MediaQuery.of(context).size.width * 0.25,
                           child: DropdownButton(
+                            underline: const SizedBox(),
                             menuMaxHeight:
                                 MediaQuery.of(context).size.height * 0.25,
                             value: selectedFilter,
                             focusColor: Colors.black,
                             isExpanded: true,
                             iconSize: 30.0,
-                            style: const TextStyle(color: Colors.black),
+                            style: GoogleFonts.poppins(
+                                textStyle: Theme.of(context).textTheme.headlineMedium,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: const Color.fromRGBO(19, 15, 38, 1)
+                            ),
                             items: filterOptions?.map<DropdownMenuItem<String>>(
                               (val) {
                                 return DropdownMenuItem<String>(
@@ -104,9 +108,9 @@ class _ClassDashboardState extends State<ClassDashboard> {
                                   selectedFilter = val!;
                                 },
                               );
+                              Provider.of<StudentList>(context, listen: false)
+                                  .classValue = val;
                               if (val == 'All') {
-                                Provider.of<StudentList>(context, listen: false)
-                                    .classValue = val;
                                 Provider.of<StudentList>(context, listen: false)
                                     .allStudentData;
                               } else {
@@ -120,19 +124,6 @@ class _ClassDashboardState extends State<ClassDashboard> {
                     ),
                 ],
               ),
-              // if (selectedFilter != 'All')
-              //   Align(
-              //     alignment: Alignment.topLeft,
-              //     child: TextButton(
-              //       onPressed: () {},
-              //       child: Row(
-              //         children: const [
-              //           Icon(Icons.pie_chart),
-              //           Text('Attendance Report')
-              //         ],
-              //       ),
-              //     ),
-              //   ),
               const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,

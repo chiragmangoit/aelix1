@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../providers/keys.dart';
-import '../../widgets/appbar.dart';
-import '../../widgets/drawer.dart';
+
 import '../../widgets/profile/profile_page.dart';
 
 class Profile extends StatelessWidget {
@@ -14,10 +13,10 @@ class Profile extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         foregroundColor: Colors.blue,
+        title: const Text('My Profile'),
       ),
-      body: Scaffold(
-          key: scaffoldKeyProfile,
-          body: const ProfileInfo()),
+      body: const Scaffold(
+          body: ProfileInfo()),
     );
   }
 }

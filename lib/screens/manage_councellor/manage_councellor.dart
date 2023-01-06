@@ -11,6 +11,7 @@ class ManageCounsellor extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         foregroundColor: Colors.blue,
+        title: const Text('Manage Counsellor'),
       ),
       body: const Scaffold(
           body: EditCounsellor()),

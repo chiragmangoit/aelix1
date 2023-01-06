@@ -68,6 +68,32 @@ class ChatProvider with ChangeNotifier {
     return decodedData;
   }
 
+  createChat(data, imageFile) async {
+    var token = await Auth.token;
+    String? url = "https://api-aelix.mangoitsol.com/api/groupChat";
+    var request = http.MultipartRequest('POST', Uri.parse(url));
+    if (imageFile != null) {
+      var filepath = imageFile!.path;
+      request.files.add(await http.MultipartFile.fromPath('image', filepath));
+    }
+    request.headers['authorization'] = 'Bearer $token';
+    data.forEach((key, value) {
+      request.fields[key] = "$value";
+    });
+    var res = await request.send();
+    // res = request
+    //     .send()
+    //     .then((result) async { return
+    //       http.Response.fromStream(result).then((response) {
+    //         print('response.body ${response.body}');
+    //         return response.body;
+    //       });
+    //     })
+    //     .catchError((err) => print('error : $err'))
+    //     .whenComplete(() {});
+    return res.statusCode;
+  }
+
   get userMessages {
     return messages;
   }
@@ -75,7 +101,6 @@ class ChatProvider with ChangeNotifier {
   get allUsers {
     return users;
   }
-
 
   getNewMessage(msg) {
     messages = msg;

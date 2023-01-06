@@ -14,10 +14,10 @@ class Password extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         foregroundColor: Colors.blue,
+        title: const Text('Change Password'),
       ),
-      body: Scaffold(
-          key: scaffoldKeyPassword,
-          body: const ChangePassword()),
+      body: const Scaffold(
+          body: ChangePassword()),
     );
   }
 }

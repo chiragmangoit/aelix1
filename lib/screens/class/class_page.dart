@@ -11,6 +11,7 @@ class Class  extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         foregroundColor: Colors.blue,
+        title: const Text('Manage Class'),
       ),
       body: const Scaffold(
           body: ManageClass()),

@@ -19,45 +19,46 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   var _isInit = true;
-  var res;
+  var role;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    checkLogin();
+    // checkLogin();
   }
 
-  checkLogin() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-     var resData = prefs.getString('userData');
-     res = jsonDecode(resData!);
-    });
-    print(res['role']);
-  }
+  // checkLogin() async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   setState(() {
+  //    var resData = prefs.getString('userData');
+  //    res = jsonDecode(resData!);
+  //   });
+  // }
 
   @override
-  void didChangeDependencies() {
+  Future<void> didChangeDependencies() async {
+    var user = await Auth.user;
+    role = user['role'];
+    print(role);
     String url;
-    if (CommonModel.userData['role'] == 'counsellor') {
+    if (role == 'counsellor') {
       url = "https://api-aelix.mangoitsol.com/api/getStu/${Auth.userid}";
     } else {
       url = "https://api-aelix.mangoitsol.com/api/student";
     }
+    if(!mounted) return;
     if (_isInit) {
-      Provider.of<StudentList>(context).fetchStudent(url);
+      Provider.of<StudentList>(context,listen: false).fetchStudent(url);
     }
+    _isInit = false;
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
-    setState(() {
-      _isInit = false;
-    });
     return Scaffold(
-      body: CommonModel.userData['role'] != 'counsellor'
+      body: role != null || Auth.role != 'counsellor'
           ? const ManagersDashboard()
           : const CouncellorDashboard(),
     );

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:aelix/widgets/profile/profile_widget.dart';
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:velocity_x/velocity_x.dart';
@@ -25,7 +26,7 @@ class _ProfileInfoState extends State<ProfileInfo> {
   var selectedCountry;
   var selectedState;
   var id;
-  bool editMode = false;
+  bool editMode = true;
   bool isChange = false;
   final _formKey = GlobalKey<FormState>();
 
@@ -170,29 +171,59 @@ class _ProfileInfoState extends State<ProfileInfo> {
                 const SizedBox(
                   height: 10,
                 ),
-                ProfileWidget(
-                  imagePath: _imageFile != null
-                      ? _imageFile!.path
-                      : "https://api-aelix.mangoitsol.com/${userData['image']}",
-                  isEdit: true,
-                  onClicked: _pickImage,
-                ),
-                const SizedBox(height: 24),
-                TextFieldWidget(
-                  mode: editMode,
-                  label: 'Profile Name',
-                  text: userData['name'],
-                  onChanged: (name) {
-                    setState(() {
-                      isChange = true;
-                    });
-                    userData['name'] = name;
-                  },
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ProfileWidget(
+                      imagePath: _imageFile != null
+                          ? _imageFile!.path
+                          : "https://api-aelix.mangoitsol.com/${userData['image']}",
+                      isEdit: true,
+                      onClicked: _pickImage,
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          userData['name'],
+                          style: GoogleFonts.poppins(
+                              textStyle:
+                                  Theme.of(context).textTheme.headlineMedium,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w500,
+                              color: const Color.fromRGBO(19, 15, 38, 1)),
+                        ),
+                        Text(
+                          Auth.role.toString().upperCamelCase,
+                          style: GoogleFonts.poppins(
+                              textStyle:
+                                  Theme.of(context).textTheme.headlineMedium,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w400,
+                              color: const Color.fromRGBO(19, 15, 38, 1)),
+                        )
+                      ],
+                    ),
+                    IconButton(
+                        onPressed: () {
+                          setState(() {
+                            editMode = false;
+                          });
+                        },
+                        icon: const Icon(
+                          Icons.edit_note_sharp,
+                          size: 28,
+                        ))
+                  ],
                 ),
                 const SizedBox(height: 24),
                 const Text(
                   'My Address',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                      color: Colors.blue),
                 ),
                 const SizedBox(height: 24),
                 TextFieldWidget(
@@ -233,7 +264,7 @@ class _ProfileInfoState extends State<ProfileInfo> {
                       );
                     },
                   ).toList(),
-                  onChanged: (val) {
+                  onChanged: editMode ? null : (val) {
                     setState(
                       () {
                         isChange = true;
@@ -270,7 +301,7 @@ class _ProfileInfoState extends State<ProfileInfo> {
                       );
                     },
                   ).toList(),
-                  onChanged: (val) {
+                  onChanged: editMode ? null :  (val) {
                     setState(
                       () {
                         isChange = true;
@@ -295,7 +326,10 @@ class _ProfileInfoState extends State<ProfileInfo> {
                 const SizedBox(height: 24),
                 const Text(
                   'Contact Detail',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                      color: Colors.blue),
                 ),
                 const SizedBox(height: 24),
                 TextFieldWidget(
@@ -321,8 +355,10 @@ class _ProfileInfoState extends State<ProfileInfo> {
                     userData['phone'] = int.parse(number);
                   },
                 ),
+                if(!editMode)
                 const SizedBox(height: 24),
-                Row(
+                if(!editMode)
+                  Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     ElevatedButton(

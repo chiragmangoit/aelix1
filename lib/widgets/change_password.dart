@@ -1,11 +1,9 @@
-import 'dart:convert';
-
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 
 import '../providers/auth_provider.dart';
-
 
 class ChangePassword extends StatefulWidget {
   const ChangePassword({Key? key}) : super(key: key);
@@ -29,10 +27,12 @@ class _ChangePasswordState extends State<ChangePassword> {
     };
     String url = "https://api-aelix.mangoitsol.com/api/resetPassword";
     var token = Auth.token;
-    final response = await http.post(Uri.parse(url), headers: {
-      'authorization': 'Bearer $token',
-    }, body: data);
-    if(!mounted) return;
+    final response = await http.post(Uri.parse(url),
+        headers: {
+          'authorization': 'Bearer $token',
+        },
+        body: data);
+    if (!mounted) return;
     if (response.statusCode == 200) {
       Flushbar(
         flushbarPosition: FlushbarPosition.TOP,
@@ -57,20 +57,18 @@ class _ChangePasswordState extends State<ChangePassword> {
       child: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: const [
-                Icon(Icons.pin_rounded),
-                Text(
-                  "Manage Password",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
-                ),
-              ],
+            Text(
+              "Change Password",
+              style: GoogleFonts.poppins(
+                  textStyle: Theme.of(context).textTheme.headlineMedium,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w600,
+                  color: const Color.fromRGBO(0, 92, 179, 1)),
             ),
-            Container(
-              width: MediaQuery.of(context).size.width * 0.5,
+            Padding(
+              padding: const EdgeInsets.all(8.0),
               child: Form(
                 key: _formKey,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -78,10 +76,15 @@ class _ChangePasswordState extends State<ChangePassword> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 24,),
+                    const SizedBox(
+                      height: 24,
+                    ),
                     const Text('Old Password',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                    const SizedBox(height: 17,),
+                        style:
+                            TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    const SizedBox(
+                      height: 17,
+                    ),
                     TextFormField(
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       validator: (value) {
@@ -101,10 +104,15 @@ class _ChangePasswordState extends State<ChangePassword> {
                         setState(() {});
                       },
                     ),
-                    const SizedBox(height: 24,),
+                    const SizedBox(
+                      height: 24,
+                    ),
                     const Text('New Password',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                    const SizedBox(height: 17,),
+                        style:
+                            TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    const SizedBox(
+                      height: 17,
+                    ),
                     TextFormField(
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       validator: (value) {
@@ -124,16 +132,21 @@ class _ChangePasswordState extends State<ChangePassword> {
                         setState(() {});
                       },
                     ),
-                    const SizedBox(height: 24,),
+                    const SizedBox(
+                      height: 24,
+                    ),
                     const Text('Confirm Password',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                    const SizedBox(height: 17,),
+                        style:
+                            TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    const SizedBox(
+                      height: 17,
+                    ),
                     TextFormField(
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please confirm Password';
-                        } else if(newPassword != confirmPassword) {
+                        } else if (newPassword != confirmPassword) {
                           return 'confirm Password not matched';
                         }
                         return null;
@@ -149,19 +162,27 @@ class _ChangePasswordState extends State<ChangePassword> {
                         setState(() {});
                       },
                     ),
-                    const SizedBox(height: 24,),
+                    const SizedBox(
+                      height: 24,
+                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        ElevatedButton(
-                            onPressed: () => Navigator.of(context).pop(), child: const Text('Cancel')),
-                        const SizedBox(width: 40,),
-                        ElevatedButton(onPressed: () =>
-                        {
-                          if(_formKey.currentState!.validate()) {
-                            updatePassword(),
-                          }
-                        }, child: const Text('Update'))
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.9,
+                          child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  foregroundColor: Colors.white,
+                                  backgroundColor:
+                                      const Color.fromRGBO(0, 92, 179, 1)),
+                              onPressed: () => {
+                                    if (_formKey.currentState!.validate())
+                                      {
+                                        updatePassword(),
+                                      }
+                                  },
+                              child: const Text('Save')),
+                        ),
                       ],
                     )
                   ],

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:aelix/providers/auth_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
+import 'package:velocity_x/velocity_x.dart';
 
 import '../model/common_model.dart';
 
@@ -20,7 +21,7 @@ class StudentList with ChangeNotifier {
     final decodedData = jsonDecode(catalogJson);
     allStudent = decodedData['data'];
     studentData = decodedData['data'];
-    CommonModel.studentList = studentData;
+    // CommonModel.studentList = studentData;
     notifyListeners();
   }
 
@@ -179,5 +180,24 @@ class StudentList with ChangeNotifier {
     studentData[studentData.indexWhere((element) => element['_id'] == id)]
         ['attaindence'] = updatedAttendanceData;
     notifyListeners();
+  }
+
+  searchStudent(String searchValue) async {
+    if(searchValue.isNotEmptyAndNotNull ){
+      String url =  'https://api-aelix.mangoitsol.com/api/search/$searchValue';
+      var token = await Auth.token;
+      final response = await http.get(Uri.parse(url), headers: {
+        'authorization': 'Bearer $token',
+      });
+      final catalogJson = response.body;
+      print(response.body);
+      final decodedData = jsonDecode(catalogJson);
+      if(decodedData['message'] == 'no records found') {
+        studentData = [];
+      } else {
+        studentData = decodedData['data'];
+      }
+      notifyListeners();
+    }
   }
 }

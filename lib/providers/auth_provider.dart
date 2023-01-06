@@ -3,7 +3,6 @@ import 'dart:convert';
 
 import 'package:aelix/model/common_model.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -12,15 +11,18 @@ class Auth with ChangeNotifier {
   static String? _role;
   static String? _userId;
   static var _userName;
-  bool _isAuthenticated = false;
 
   bool get isAuthenticated {
-    return _isAuthenticated;
+    autoLogIn();
+    return _token != null;
   }
 
-  set isAuthenticated(bool newVal) {
-    _isAuthenticated = newVal;
+  logOut() async {
+    _token = null;
+    _userId = null;
     notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    prefs.clear();
   }
 
   static get user async {
@@ -33,7 +35,7 @@ class Auth with ChangeNotifier {
   static get token async {
     final prefs = await SharedPreferences.getInstance();
     var res = prefs.getString('userData');
-    if(res == null) return null;
+    if (res == null) return null;
     var result = json.decode(res!);
     _token = result['token'];
     return _token;
@@ -49,6 +51,19 @@ class Auth with ChangeNotifier {
 
   static String? get userInfo {
     return _userName;
+  }
+
+  autoLogIn() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!prefs.containsKey('userData')) {
+      return false;
+    }
+    final extractedUserData =
+        json.decode(prefs.getString('userData')!);
+    _token = extractedUserData['token'] as String?;
+    _userId = extractedUserData['_id'] as String?;
+    notifyListeners();
+    return true;
   }
 
   Future signInWithEmail(String username, String password) async {
@@ -87,4 +102,3 @@ class Auth with ChangeNotifier {
     return resStatus;
   }
 }
-

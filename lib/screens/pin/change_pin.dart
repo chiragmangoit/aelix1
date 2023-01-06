@@ -12,10 +12,10 @@ class Pin extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         foregroundColor: Colors.blue,
+        title: const Text('Change Pin'),
       ),
-      body: Scaffold(
-          key: scaffoldKeyPin,
-          body: const ChangePin()),
+      body: const Scaffold(
+          body: ChangePin()),
     );
   }
 }

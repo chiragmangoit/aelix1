@@ -116,7 +116,6 @@ class _ManageClassState extends State<ManageClass> {
   }
 
   addNewClass(data) async {
-    print(data);
     var result = await Provider.of<Classes>(context, listen: false)
         .addClassToDatabase(data);
     if (!mounted) return;

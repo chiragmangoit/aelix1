@@ -1,8 +1,13 @@
+import 'dart:convert';
+
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:velocity_x/velocity_x.dart';
+import 'package:http/http.dart' as http;
 
+import '../../providers/auth_provider.dart';
 import '../../providers/counsellor_provider.dart';
 
 class EditCounsellor extends StatefulWidget {
@@ -14,14 +19,31 @@ class EditCounsellor extends StatefulWidget {
 
 class _EditCounsellorState extends State<EditCounsellor> {
   var _isInit = true;
-  late ScrollController _scrollController;
+  var filterOptions;
+  var selectedFilter = 'All';
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _scrollController = ScrollController();
+    fetchClasses();
+  }
 
+  fetchClasses() async {
+    String url = "https://api-aelix.mangoitsol.com/api/getClass";
+    var token = await Auth.token;
+    final response = await http.get(Uri.parse(url), headers: {
+      'authorization': 'Bearer $token',
+    });
+    final catalogJson = response.body;
+    final decodedData = jsonDecode(catalogJson);
+    List classes = ['All'];
+    for (var data in decodedData['data']) {
+      classes.add(data['className'].toString());
+    }
+    setState(() {
+      filterOptions = classes;
+    });
   }
 
   @override
@@ -51,7 +73,6 @@ class _EditCounsellorState extends State<EditCounsellor> {
 
   @override
   Widget build(BuildContext context) {
-    // Provider.of<Counsellor>(context).fetchCounsellors();
     if (Provider.of<Counsellor>(context).counsellors != null) {
       var counsellorData = Provider.of<Counsellor>(context)
           .counsellors
@@ -62,90 +83,172 @@ class _EditCounsellorState extends State<EditCounsellor> {
         child: Column(
           children: [
             Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                const ImageIcon(
+                  AssetImage('assets/images/councellor.png'),size: 36,
+                ),
+                const SizedBox(
+                  width: 5.0,
+                ),
+                Text(
+                  'Counsellor',
+                  style: GoogleFonts.poppins(
+                      textStyle: Theme.of(context).textTheme.headlineMedium,
+                      fontSize: 24,
+                      fontWeight: FontWeight.w600,
+                      color: const Color.fromRGBO(0, 92, 179, 1)),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10,),
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: const [
-                    Icon(Icons.class_),
-                    SizedBox(
-                      width: 5.0,
-                    ),
+                  children: [
                     Text(
-                      'Counsellor',
-                      style:
-                          TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                    )
+                      'FILTER BY:',
+                      style: GoogleFonts.poppins(
+                          textStyle: Theme.of(context).textTheme.headlineMedium,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: const Color.fromRGBO(19, 15, 38, 1)
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 8.0,
+                    ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.25,
+                      child: DropdownButton(
+                        underline: const SizedBox(),
+                        menuMaxHeight:
+                        MediaQuery.of(context).size.height * 0.25,
+                        value: selectedFilter,
+                        focusColor: Colors.black,
+                        isExpanded: true,
+                        iconSize: 30.0,
+                        style: GoogleFonts.poppins(
+                            textStyle: Theme.of(context).textTheme.headlineMedium,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: const Color.fromRGBO(19, 15, 38, 1)
+                        ),
+                        items: filterOptions?.map<DropdownMenuItem<String>>(
+                              (val) {
+                            return DropdownMenuItem<String>(
+                              value: val,
+                              child: Text(val),
+                            );
+                          },
+                        ).toList(),
+                        onChanged: (val) {
+                          setState(
+                                () {
+                              selectedFilter = val!;
+                            },
+                          );
+                          Provider.of<Counsellor>(context, listen: false)
+                              .filterCounsellorByClass(val);
+                        },
+                      ),
+                    ),
                   ],
                 ),
-                TextButton(
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromRGBO(0, 92, 179, 1)
+                  ),
                     onPressed: () {
                       Navigator.pushNamed(context, '/addCounsellor');
                     },
-                    child: const Text(
+                    child: Text(
                       'Add Counsellor',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-                    ))
+                      style: GoogleFonts.poppins(
+                          textStyle: Theme.of(context)
+                              .textTheme
+                              .headlineMedium,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: const Color.fromRGBO(
+                              255, 255, 255, 1)),
+                    )),
               ],
             ),
-            Scrollbar(
-              controller: _scrollController,
-              thumbVisibility: true,
-              child: SingleChildScrollView(
-                controller: _scrollController,
-                scrollDirection: Axis.horizontal,
-                child: DataTable(
-                    dataRowHeight: 110,
-                    columns: const [
-                      DataColumn(
-                        label: Text('Name'),
-                      ),
-                      DataColumn(
-                        label: Text('Class'),
-                      ),
-                      DataColumn(
-                        label: Expanded(
-                          child: Text(
-                            'Assign Students',
-                            softWrap: true,
-                            maxLines: 2,
-                          ),
-                        ),
-                      ),
-                      DataColumn(
-                        label: Text('Action'),
-                      ),
-                    ],
-                    rows: counsellorData
-                        .map<DataRow>((data) => DataRow(cells: [
-                              DataCell(
-                                  Text(data['name'] + ' ' + data['lastname'])),
-                              DataCell(Text(data['classId']['className']
-                                  )),
-                              DataCell(Text(data['studentCount'].toString())),
-                              DataCell(Row(
-                                children: [
-                                  IconButton(
-                                    onPressed: () {
-                                      Navigator.pushNamed(context, '/addCounsellor',
-                                          arguments: data);
-                                    },
-                                    icon: const Icon(Icons.edit_note),
-                                  ),
-                                  IconButton(
-                                    onPressed: () {
-                                      deleteCounsellor(data['_id']);
-                                    },
-                                    icon:
-                                        const Icon(Icons.delete_forever_outlined),
-                                  )
-                                ],
-                              ))
-                            ]))
-                        .toList()),
-              ),
-            )
+            Column(
+                children: counsellorData
+                    .map<Widget>((data) => Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      data['name'] + ' ' + data['lastname'],
+                                      style: GoogleFonts.poppins(
+                                          textStyle: Theme.of(context)
+                                              .textTheme
+                                              .headlineMedium,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                          color: const Color.fromRGBO(
+                                              25, 40, 56, 1)),
+                                    ),
+                                    Row(
+                                      children: [
+                                        Text(
+                                          data['classId']['className'],
+                                          style: GoogleFonts.poppins(
+                                              textStyle: Theme.of(context)
+                                                  .textTheme
+                                                  .headlineMedium,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w600,
+                                              color: const Color.fromRGBO(
+                                                  119, 119, 119, 1)),
+                                        ),
+                                        const Text(' | '),
+                                        Text(
+                                          'Assign Students: ${data['studentCount']}',
+                                          style: GoogleFonts.poppins(
+                                              textStyle: Theme.of(context)
+                                                  .textTheme
+                                                  .headlineMedium,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w600,
+                                              color: const Color.fromRGBO(
+                                                  0, 92, 179, 1)),
+                                        ),
+                                      ],
+                                    )
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    IconButton(
+                                      onPressed: () {
+                                        Navigator.pushNamed(
+                                            context, '/addCounsellor',
+                                            arguments: data);
+                                      },
+                                      icon: const Icon(Icons.edit_note),
+                                    ),
+                                    IconButton(
+                                      onPressed: () {
+                                        deleteCounsellor(data['_id']);
+                                      },
+                                      icon: const Icon(
+                                          Icons.delete_forever_outlined),
+                                    )
+                                  ],
+                                )
+                              ]),
+                        ))
+                    .toList())
           ],
         ),
       ));
